@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Crawler {
     private final Indexer indexer;
-    private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(Arrays.asList("txt", "docx", "rtf")); //???
+    private static final Set<String> IGNORED_EXTENSIONS = new HashSet<>(Arrays.asList("exe", "tmp"));
 
     public Crawler(Indexer indexer)
     {
@@ -29,7 +29,7 @@ public class Crawler {
             if (file.isDirectory()) {
                 crawlDirectory(file);
             } else {
-                if (allowFile(file)) {
+                if (!ignoreFile(file)) {
                     this.indexer.indexFile(file);
                     //extractMetadata(file);
                 }
@@ -48,13 +48,13 @@ public class Crawler {
     }
     */
 
-    private static boolean allowFile(File file)
+    private static boolean ignoreFile(File file)
     {
         String name = file.getName();
         int extensionIndex = name.lastIndexOf('.');
         if (extensionIndex != -1) {
             String extension = name.substring(extensionIndex + 1).toLowerCase();
-            return ALLOWED_EXTENSIONS.contains(extension);
+            return IGNORED_EXTENSIONS.contains(extension);
         }
         return false;
     }
