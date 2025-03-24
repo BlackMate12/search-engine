@@ -15,7 +15,7 @@ public class Crawler {
     {
         this.indexer = indexer;
     }
-    public static void crawlDirectory(File directory)
+    public void crawlDirectory(File directory)
     {
         if (directory == null || !directory.exists()) {
             System.out.println("Invalid directory: " + directory);
@@ -30,13 +30,14 @@ public class Crawler {
                 crawlDirectory(file);
             } else {
                 if (allowFile(file)) {
-                    //send to indexer
-                    extractMetadata(file);
+                    this.indexer.indexFile(file);
+                    //extractMetadata(file);
                 }
             }
         }
     }
 
+    /*
     private static void extractMetadata(File file)
     {
         System.out.println("File: " + file.getName());
@@ -45,6 +46,7 @@ public class Crawler {
         System.out.println("  Last Modified: " + file.lastModified());
         System.out.println("---------------------------------");
     }
+    */
 
     private static boolean allowFile(File file)
     {
