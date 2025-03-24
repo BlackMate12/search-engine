@@ -1,6 +1,6 @@
 package indexer;
 
-import db.DBConnection;
+import db.DBHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Indexer {
-    private final DBConnection dbConnection;
+    private final DBHandler dbHandler;
     private static final Set<String> EXTRACTABLE_EXTENSIONS = new HashSet<>(Arrays.asList("txt"));
 
-    public Indexer(DBConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public Indexer(DBHandler dbHandler) {
+        this.dbHandler = dbHandler;
     }
 
     public void indexFile(File file) {
@@ -26,7 +26,7 @@ public class Indexer {
         long lastModified = file.lastModified();
         String content = extractContent(file);
 
-        dbConnection.insertOrUpdateFile(fileName, filePath, fileSize, lastModified, content);
+        dbHandler.insertOrUpdateFile(fileName, filePath, fileSize, lastModified, content);
         //System.out.println("Indexed: " + fileName);
     }
 
