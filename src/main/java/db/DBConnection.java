@@ -10,22 +10,24 @@ public class DBConnection {
     private static final String PASSWORD = "mate4black";
     private static Connection connection;
 
-    public static Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed()) {
+    public static Connection getConnection() throws SQLException
+    {
+        if (connection == null || connection.isClosed())
+        {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
         }
         return connection;
     }
 
-    public static void closeConnection() {
+    public static void closeConnection()
+    {
         try {
-            if (connection != null && !connection.isClosed()) {
+            if (connection != null && !connection.isClosed())
+            {
                 connection.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-
 }

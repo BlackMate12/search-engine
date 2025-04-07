@@ -1,17 +1,30 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import search.SearchAPI;
+import crawler.Crawler;
+import db.DBHandler;
+import indexer.Indexer;
+
+import java.io.File;
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        DBHandler dbHandler = new DBHandler();
+        Indexer indexer = new Indexer(dbHandler);
+        Crawler crawler = new Crawler(indexer);
+        SearchAPI api = new SearchAPI(dbHandler);
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+        File rootDirectory = new File("D:/schkool/YEAR 2");
+        crawler.crawlDirectory(rootDirectory);
 
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
+        Scanner scanner = new Scanner(System.in);
+        int flag = 1;
+        while(flag == 1)
+        {
+            System.out.print("Search for: ");
+            String query = scanner.nextLine();
+            api.search(query);
+            if(query.equals("exit"))
+                flag = 0;
         }
     }
 }

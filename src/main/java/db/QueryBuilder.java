@@ -2,24 +2,23 @@ package db;
 
 public class QueryBuilder {
 
-    public static String buildInsertQuery(String tableName, String[] columns) {
-        String columnNames = String.join(", ", columns);
-        String placeholders = String.join(", ", new String[columns.length]).replace("\0", "?");
-
-        return "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + placeholders + ")";
+    public static String buildInsertOrUpdateFileQuery()
+    {
+        return "INSERT INTO files (name, path, extension, size, last_modified, content) " +
+                "VALUES (?, ?, ?, ?, ?, ?) " +
+                "ON CONFLICT (path) DO UPDATE SET " +
+                "name = EXCLUDED.name, extension = EXCLUDED.extension, size = EXCLUDED.size, " +
+                "last_modified = EXCLUDED.last_modified, content = EXCLUDED.content";
     }
 
-    public static String buildUpdateQuery(String tableName, String[] columns, String condition) {
-        String setClause = String.join(" = ?, ", columns) + " = ?";
-        return "UPDATE " + tableName + " SET " + setClause + " WHERE " + condition;
+    public static String buildSearchQuery()
+    {
+        return "SELECT name, path FROM files WHERE tsv_content @@ to_tsquery(?)";
     }
 
-    public static String buildSelectQuery(String tableName, String condition) {
-        return "SELECT * FROM " + tableName + (condition != null ? " WHERE " + condition : "");
-    }
-
-    public static String buildDeleteQuery(String tableName, String condition) {
-        return "DELETE FROM " + tableName + " WHERE " + condition;
+    public static String buildDeleteQuery()
+    {
+        return "DELETE FROM files"; //deletes everything, add back conditions and stuff later if needed lol
     }
 }
 

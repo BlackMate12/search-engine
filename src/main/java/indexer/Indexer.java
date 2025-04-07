@@ -17,24 +17,27 @@ public class Indexer {
         this.dbHandler = dbHandler;
     }
 
-    public void indexFile(File file) {
+    public void indexFile(File file)
+    {
         if (file == null || !file.exists()) return;
 
         String fileName = file.getName();
         String filePath = file.getAbsolutePath();
         long fileSize = file.length();
-        long lastModified = file.lastModified();
+        long lastModified = file.lastModified(); //turn to readable time later
         String content = extractContent(file);
 
         dbHandler.insertOrUpdateFile(fileName, filePath, fileSize, lastModified, content);
         //System.out.println("Indexed: " + fileName);
     }
 
-    private String extractContent(File file) {
+    private String extractContent(File file)
+    {
         try {
             String name = file.getName();
             int extensionIndex = name.lastIndexOf('.');
-            if (extensionIndex != -1) {
+            if (extensionIndex != -1)
+            {
                 String extension = name.substring(extensionIndex + 1).toLowerCase();
                 if(EXTRACTABLE_EXTENSIONS.contains(extension))
                     return new String(Files.readAllBytes(file.toPath()));
