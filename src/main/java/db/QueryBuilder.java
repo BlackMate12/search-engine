@@ -13,7 +13,7 @@ public class QueryBuilder {
 
     public static String buildSearchQuery()
     {
-        return "SELECT name, path FROM files WHERE tsv_content @@ to_tsquery(?)";
+        return "SELECT name, path FROM files WHERE tsv_content @@ to_tsquery(?) OR LOWER(name) LIKE LOWER(?)";
     }
 
     public static String buildDeleteQuery()

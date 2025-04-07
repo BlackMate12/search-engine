@@ -41,6 +41,7 @@ public class DBHandler {
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, userInput.replace(" ", " & "));
+            stmt.setString(2, "%" + userInput + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next())
             {
