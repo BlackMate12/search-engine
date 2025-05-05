@@ -41,34 +41,33 @@ public class DBHandler {
     public void searchFile(String userInput) {
         Map<String, String> parsed = parseQuery(userInput);
 
-        StringBuilder sql = new StringBuilder("SELECT name, path FROM files WHERE ");
+        StringBuilder query = new StringBuilder("SELECT name, path, content FROM files WHERE ");
         boolean hasCondition = false;
 
         if (parsed.containsKey("path")) {
-            sql.append("path ILIKE ? ");
+            query.append("path ILIKE ? ");
             hasCondition = true;
         }
 
         if (parsed.containsKey("content")) {
-            if (hasCondition) sql.append("AND ");
-            sql.append("(tsv_content @@ to_tsquery(?) OR name ILIKE ?) ");
+            if (hasCondition) query.append("AND ");
+            query.append("(tsv_content @@ to_tsquery(?) OR name ILIKE ?) ");
             hasCondition = true;
         }
 
         if (parsed.containsKey("extension")) {
-            if (hasCondition) sql.append("AND ");
-            sql.append("extension = ? ");
+            if (hasCondition) query.append("AND ");
+            query.append("extension = ? ");
             hasCondition = true;
         }
 
         if (!hasCondition) {
-            // Default search if no special qualifier
-            sql.append("(tsv_content @@ to_tsquery(?) OR name ILIKE ?) ");
+            query.append("(tsv_content @@ to_tsquery(?) OR name ILIKE ?) "); //default
         }
 
-        sql.append("ORDER BY score DESC");
+        query.append("ORDER BY score DESC");
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+        try (PreparedStatement stmt = conn.prepareStatement(query.toString())) {
             int index = 1;
             if (parsed.containsKey("path")) {
                 stmt.setString(index++, "%" + parsed.get("path") + "%");
@@ -89,7 +88,25 @@ public class DBHandler {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                System.out.println("Found: " + rs.getString("name") + " at " + rs.getString("path"));
+                String name = rs.getString("name");
+                String path = rs.getString("path");
+                String content = rs.getString("content");
+
+                System.out.println("Found: " + name + " at " + path);
+                if (content != null && !content.trim().isEmpty()) {
+                    String preview = content
+                            .replaceAll("[\\r\\n]+", " ")
+                            .trim();
+
+                    if (preview.length() > 150) {
+                        preview = preview.substring(0, 150) + "...";
+                    }
+
+                    System.out.println("Preview: " + preview);
+                } else {
+                    System.out.println("Preview: (No content available)");
+                }
+                System.out.println();
             }
         } catch (SQLException e) {
             System.err.println("Search query failed");
