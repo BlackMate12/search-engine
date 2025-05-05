@@ -4,13 +4,17 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import observer.SearchSubject;
+
 public class DBHandler {
     private final Connection conn;
+    private final SearchSubject subject;
 
-    public DBHandler()
+    public DBHandler(SearchSubject subject)
     {
         try {
             this.conn = DBConnection.getConnection();
+            this.subject = subject;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to DB", e);
         }
@@ -39,6 +43,7 @@ public class DBHandler {
 
     //input from searchapi
     public void searchFile(String userInput) {
+        subject.notifyObservers(userInput);
         Map<String, String> parsed = parseQuery(userInput);
 
         StringBuilder query = new StringBuilder("SELECT name, path, content FROM files WHERE ");
