@@ -26,8 +26,9 @@ public class Indexer {
         long fileSize = file.length();
         long lastModified = file.lastModified(); //turn to readable time later
         String content = extractContent(file);
+        double score = calculateScore(file);
 
-        dbHandler.insertOrUpdateFile(fileName, filePath, fileSize, lastModified, content);
+        dbHandler.insertOrUpdateFile(fileName, filePath, fileSize, lastModified, content, score);
         //System.out.println("Indexed: " + fileName);
     }
 
@@ -48,5 +49,17 @@ public class Indexer {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private double calculateScore(File file) {
+        String path = file.getAbsolutePath();
+        int pathDepth = path.split(File.separator.equals("\\") ? "\\\\" : File.separator).length;
+
+        double baseScore = file.lastModified()/1000.0/60.0/60.0/24.0;
+        double aux = baseScore/2;
+
+        baseScore += aux / pathDepth;  // shorter path = higher score
+
+        return baseScore;
     }
 }
