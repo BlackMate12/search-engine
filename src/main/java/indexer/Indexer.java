@@ -1,6 +1,7 @@
 package indexer;
 
 import db.DBHandler;
+import indexReport.IndexReportFormatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +13,11 @@ import java.util.Set;
 public class Indexer {
     private final DBHandler dbHandler;
     private static final Set<String> EXTRACTABLE_EXTENSIONS = new HashSet<>(Arrays.asList("txt"));
+    private final IndexReportFormatter formatter;
 
-    public Indexer(DBHandler dbHandler) {
+    public Indexer(DBHandler dbHandler, IndexReportFormatter formatter) {
         this.dbHandler = dbHandler;
+        this.formatter = formatter;
     }
 
     public void indexFile(File file)
@@ -29,7 +32,7 @@ public class Indexer {
         double score = calculateScore(file);
 
         dbHandler.insertOrUpdateFile(fileName, filePath, fileSize, lastModified, content, score);
-        //System.out.println("Indexed: " + fileName);
+        formatter.report(file, score);
     }
 
     private String extractContent(File file)

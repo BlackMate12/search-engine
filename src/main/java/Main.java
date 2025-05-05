@@ -1,15 +1,25 @@
+import indexReport.CsvReportFormatter;
 import search.SearchAPI;
 import crawler.Crawler;
 import db.DBHandler;
 import indexer.Indexer;
+import indexReport.*;
 
 import java.io.File;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        String reportType = args.length > 0 ? args[0] : "console";
+
+        IndexReportFormatter formatter = switch (reportType.toLowerCase()) {
+            case "csv" -> new CsvReportFormatter("index_report.csv");
+            default -> new ConsoleReportFormatter();
+        };
+
         DBHandler dbHandler = new DBHandler();
-        Indexer indexer = new Indexer(dbHandler);
+        Indexer indexer = new Indexer(dbHandler, formatter);
+
         Crawler crawler = new Crawler(indexer);
         SearchAPI api = new SearchAPI(dbHandler);
 
